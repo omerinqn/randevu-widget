@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Randevu Geri Sayaç</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f7f5;
+    --bg-tertiary: #efeeeb;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6b6b6b;
+    --border-light: rgba(0,0,0,0.1);
+    --border-mid: rgba(0,0,0,0.18);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1f1f1e;
+      --bg-secondary: #2a2a28;
+      --bg-tertiary: #333331;
+      --text-primary: #ececec;
+      --text-secondary: #999997;
+      --border-light: rgba(255,255,255,0.1);
+      --border-mid: rgba(255,255,255,0.18);
+    }
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 1.25rem 1.5rem 2rem;
+    font-size: 14px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1.25rem;
+  }
+  .header i { font-size: 20px; color: var(--text-secondary); }
+  .header h1 { font-size: 17px; font-weight: 500; }
+
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+  .form-grid.full { grid-template-columns: 1fr; }
+  label { font-size: 11px; color: var(--text-secondary); display: block; margin-bottom: 3px; }
+  input, select {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 13px;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font);
+    outline: none;
+  }
+  input:focus, select:focus { border-color: #378ADD; }
+
+  .btn-add {
+    width: 100%;
+    margin-top: 10px;
+    padding: 9px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 0.5px solid var(--border-mid);
+    border-radius: var(--radius-md);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    cursor: pointer;
+    font-family: var(--font);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-add:hover { background: var(--bg-tertiary); }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin: 1.25rem 0 8px;
+  }
+
+  .appt-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 0.9rem 1.1rem;
+  }
+  .appt-card-title {
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: var(--radius-md);
+    font-weight: 400;
+  }
+  .badge-blue { background: #E6F1FB; color: #185FA5; }
+  .badge-gray { background: #F1EFE8; color: #5F5E5A; }
+  .badge-green { background: #EAF3DE; color: #3B6D11; }
+  .appt-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .appt-meta span {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .appt-meta i { font-size: 13px; }
+
+  .countdown-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+    margin-top: 1rem;
+  }
+  .cd-card {
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .cd-val {
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+  .cd-lbl {
+    font-size: 10px;
+    color: var(--text-secondary);
+    margin-top: 3px;
+  }
+
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .list-item {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border-light);
+    border-radius: var(--radius-md);
+    padding: 8px 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .list-item:hover, .list-item.active { border-color: #378ADD; }
+  .list-item.active { background: #E6F1FB; }
+  @media (prefers-color-scheme: dark) {
+    .list-item.active { background: #0C447C22; }
+    .badge-blue { background: #0C447C; color: #B5D4F4; }
+    .badge-gray { background: #444441; color: #D3D1C7; }
+    .badge-green { background: #27500A; color: #C0DD97; }
+  }
+  .li-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+  .li-date { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+  .li-countdown { font-size: 12px; font-weight: 500; color: #185FA5; white-space: nowrap; margin-left: 10px; }
+  .li-right { display: flex; align-items: center; gap: 6px; }
+  .btn-del {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-secondary);
+    font-size: 14px;
+    padding: 2px 4px;
+    border-radius: 4px;
+    line-height: 1;
+  }
+  .btn-del:hover { color: #E24B4A; background: #FCEBEB; }
+  .empty {
+    text-align: center;
+    padding: 1.5rem;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <i class="ti ti-calendar-event"></i>
+  <h1>Randevu geri sayaç</h1>
+</div>
+
+<div class="form-grid full">
+  <div><label>Randevu adı</label><input id="inp-name" type="text" placeholder="örn. Seft Mühendislik toplantısı"></div>
+</div>
+<div class="form-grid">
+  <div><label>Tarih & saat</label><input id="inp-date" type="datetime-local"></div>
+  <div><label>Yer</label><input id="inp-place" type="text" placeholder="İstanbul / Online"></div>
+</div>
+<div class="form-grid">
+  <div>
+    <label>Tür</label>
+    <select id="inp-type">
+      <option>Kişisel</option>
+      <option selected>Müşteri Toplantısı</option>
+      <option>Sunum</option>
+      <option>Keşif</option>
+      <option>Diğer</option>
+    </select>
+  </div>
+  <div>
+    <label>Öncelik</label>
+    <select id="inp-priority">
+      <option>🔴 Yüksek</option>
+      <option selected>🟡 Orta</option>
+      <option>🟢 Düşük</option>
+    </select>
+  </div>
+</div>
+<button class="btn-add" onclick="addAppt()">
+  <i class="ti ti-plus"></i> Randevu ekle
+</button>
+
+<div id="selected-section" class="hidden">
+  <div class="section-label">seçili randevu — geri sayaç</div>
+  <div id="appt-card" class="appt-card"></div>
+  <div class="countdown-grid">
+    <div class="cd-card"><div class="cd-val" id="cd-days">--</div><div class="cd-lbl">gün</div></div>
+    <div class="cd-card"><div class="cd-val" id="cd-hours">--</div><div class="cd-lbl">saat</div></div>
+    <div class="cd-card"><div class="cd-val" id="cd-mins">--</div><div class="cd-lbl">dakika</div></div>
+    <div class="cd-card"><div class="cd-val" id="cd-secs">--</div><div class="cd-lbl">saniye</div></div>
+  </div>
+</div>
+
+<div id="list-section" class="hidden">
+  <div class="section-label">tüm randevular</div>
+  <div class="list" id="appt-list"></div>
+</div>
+
+<script>
+let appts = JSON.parse(localStorage.getItem('randevular_widget') || '[]');
+let selectedIdx = null;
+let ticker = null;
+
+function save() {
+  try { localStorage.setItem('randevular_widget', JSON.stringify(appts)); } catch(e) {}
+}
+
+function addAppt() {
+  const name = document.getElementById('inp-name').value.trim();
+  const date = document.getElementById('inp-date').value;
+  const place = document.getElementById('inp-place').value.trim();
+  const type = document.getElementById('inp-type').value;
+  const priority = document.getElementById('inp-priority').value;
+  if (!name || !date) { alert('Randevu adı ve tarih zorunludur.'); return; }
+  appts.push({ name, date, place, type, priority, id: Date.now() });
+  appts.sort((a, b) => new Date(a.date) - new Date(b.date));
+  save();
+  document.getElementById('inp-name').value = '';
+  document.getElementById('inp-date').value = '';
+  document.getElementById('inp-place').value = '';
+  renderList();
+  if (selectedIdx === null) selectAppt(0);
+  else renderList();
+}
+
+function deleteAppt(idx, e) {
+  e.stopPropagation();
+  appts.splice(idx, 1);
+  save();
+  if (selectedIdx === idx) {
+    selectedIdx = null;
+    if (ticker) clearInterval(ticker);
+    document.getElementById('selected-section').classList.add('hidden');
+  } else if (selectedIdx > idx) {
+    selectedIdx--;
+  }
+  renderList();
+  if (selectedIdx !== null && appts[selectedIdx]) renderCard();
+}
+
+function selectAppt(idx) {
+  selectedIdx = idx;
+  if (ticker) clearInterval(ticker);
+  renderCard();
+  ticker = setInterval(renderCountdown, 1000);
+  renderCountdown();
+  renderList();
+}
+
+function renderCard() {
+  if (selectedIdx === null || !appts[selectedIdx]) return;
+  const a = appts[selectedIdx];
+  const dt = new Date(a.date);
+  const now = new Date();
+  const dateStr = dt.toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  const timeStr = dt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+  let badgeClass = 'badge-blue', badgeText = 'Yaklaşıyor';
+  if (dt < now) { badgeClass = 'badge-gray'; badgeText = 'Geçmiş'; }
+  document.getElementById('appt-card').innerHTML = `
+    <div class="appt-card-title">${a.name}<span class="badge ${badgeClass}">${badgeText}</span></div>
+    <div class="appt-meta">
+      <span><i class="ti ti-calendar"></i>${dateStr}, ${timeStr}</span>
+      ${a.place ? `<span><i class="ti ti-map-pin"></i>${a.place}</span>` : ''}
+      <span><i class="ti ti-tag"></i>${a.type}</span>
+      <span>${a.priority}</span>
+    </div>`;
+  document.getElementById('selected-section').classList.remove('hidden');
+}
+
+function renderCountdown() {
+  if (selectedIdx === null || !appts[selectedIdx]) return;
+  const target = new Date(appts[selectedIdx].date);
+  let diff = target - new Date();
+  if (diff < 0) diff = 0;
+  document.getElementById('cd-days').textContent  = String(Math.floor(diff / 86400000)).padStart(2, '0');
+  document.getElementById('cd-hours').textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
+  document.getElementById('cd-mins').textContent  = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
+  document.getElementById('cd-secs').textContent  = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
+}
+
+function renderList() {
+  const section = document.getElementById('list-section');
+  const list = document.getElementById('appt-list');
+  if (!appts.length) { section.classList.add('hidden'); return; }
+  section.classList.remove('hidden');
+  list.innerHTML = appts.map((a, i) => {
+    const dt = new Date(a.date);
+    const diff = dt - new Date();
+    let countdown = diff > 0
+      ? (Math.floor(diff/86400000) > 0 ? `${Math.floor(diff/86400000)}g ${Math.floor((diff%86400000)/3600000)}s` : `${Math.floor(diff/3600000)}s ${Math.floor((diff%3600000)/60000)}dk`)
+      : 'Geçti';
+    const dateStr = dt.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+    const timeStr = dt.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+    const activeClass = i === selectedIdx ? ' active' : '';
+    return `<div class="list-item${activeClass}" onclick="selectAppt(${i})">
+      <div>
+        <div class="li-name">${a.name}</div>
+        <div class="li-date">${dateStr} ${timeStr}${a.place ? ' · ' + a.place : ''}</div>
+      </div>
+      <div class="li-right">
+        <span class="li-countdown">${countdown}</span>
+        <button class="btn-del" onclick="deleteAppt(${i}, event)" title="Sil"><i class="ti ti-x"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+renderList();
+if (appts.length) selectAppt(0);
+</script>
+</body>
+</html>
